@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>chota hathi</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #fdf2f8, #fce7f3, #f3e8ff);
+            overflow-x: hidden;
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="%23ec4899"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>'), auto;
+        }
+        
+        .section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 1s ease-in-out;
+        }
+        
+        .section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .landing {
+            text-align: center;
+            background: radial-gradient(circle at center, rgba(251, 207, 232, 0.3), transparent);
+        }
+        
+        .landing h1 {
+            font-size: 4rem;
+            color: #ec4899;
+            margin-bottom: 2rem;
+            font-weight: 300;
+            letter-spacing: 2px;
+            animation: fadeInUp 2s ease-out;
+        }
+        
+        .landing p {
+            font-size: 1.5rem;
+            color: #be185d;
+            font-style: italic;
+            animation: fadeInUp 2s ease-out 0.5s both;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .photo-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            padding: 3rem;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(236, 72, 153, 0.1);
+        }
+        
+        .photo-placeholder {
+            width: 400px;
+            height: 500px;
+            background: linear-gradient(45deg, #fdf2f8, #fce7f3);
+            border: 3px dashed #ec4899;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #be185d;
+            font-size: 1.2rem;
+            font-style: italic;
+            margin: 0 auto;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+        
+        .photo-placeholder img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 17px;
+        }
+        
+        .photo-placeholder:hover {
+            transform: scale(1.02);
+            box-shadow: 0 15px 30px rgba(236, 72, 153, 0.2);
+        }
+        
+        .about-section {
+            max-width: 800px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(5px);
+            border-radius: 25px;
+            padding: 4rem;
+        }
+        
+        .about-section h2 {
+            font-size: 3rem;
+            color: #be185d;
+            margin-bottom: 2rem;
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+        
+        .about-text {
+            font-size: 1.3rem;
+            line-height: 1.8;
+            color: #9d174d;
+            font-style: italic;
+            background: linear-gradient(45deg, #fdf2f8, #fce7f3);
+            padding: 2rem;
+            border-radius: 15px;
+            border-left: 4px solid #ec4899;
+        }
+        
+        .timeline-section {
+            max-width: 1000px;
+            width: 100%;
+        }
+        
+        .timeline-title {
+            text-align: center;
+            font-size: 3rem;
+            color: #be185d;
+            margin-bottom: 4rem;
+            font-weight: 300;
+        }
+        
+        .timeline {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 3rem;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, #ec4899, #f472b6, #ec4899);
+            transform: translateX(-50%);
+        }
+        
+        .timeline-item {
+            display: flex;
+            align-items: center;
+            position: relative;
+            opacity: 0;
+            transform: translateX(-50px);
+            transition: all 0.8s ease;
+        }
+        
+        .timeline-item:nth-child(even) {
+            flex-direction: row-reverse;
+            transform: translateX(50px);
+        }
+        
+        .timeline-item.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        .timeline-content {
+            flex: 1;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            margin: 0 2rem;
+            box-shadow: 0 10px 30px rgba(236, 72, 153, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .timeline-content:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(236, 72, 153, 0.2);
+        }
+        
+        .timeline-dot {
+            width: 20px;
+            height: 20px;
+            background: #ec4899;
+            border-radius: 50%;
+            border: 4px solid #fdf2f8;
+            box-shadow: 0 0 20px rgba(236, 72, 153, 0.5);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        .moment-title {
+            font-size: 1.8rem;
+            color: #be185d;
+            margin-bottom: 1rem;
+            font-weight: 400;
+        }
+        
+        .moment-text {
+            color: #9d174d;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            font-style: italic;
+        }
+        
+        .proposal-section {
+            text-align: center;
+            background: radial-gradient(ellipse at center, rgba(251, 207, 232, 0.4), transparent);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .proposal-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="hearts" patternUnits="userSpaceOnUse" width="20" height="20"><circle cx="10" cy="10" r="1" fill="%23ec4899" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23hearts)"/></svg>');
+            animation: float 20s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .proposal-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .proposal-title {
+            font-size: 4.5rem;
+            color: #be185d;
+            margin-bottom: 2rem;
+            font-weight: 300;
+            letter-spacing: 2px;
+            text-shadow: 0 0 30px rgba(236, 72, 153, 0.3);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow {
+            from { text-shadow: 0 0 20px rgba(236, 72, 153, 0.3); }
+            to { text-shadow: 0 0 40px rgba(236, 72, 153, 0.6); }
+        }
+        
+        .floating-hearts {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        
+        .heart {
+            position: absolute;
+            color: #ec4899;
+            font-size: 1.5rem;
+            animation: floatUp 6s ease-in-out infinite;
+            opacity: 0;
+        }
+        
+        @keyframes floatUp {
+            0% {
+                opacity: 0;
+                transform: translateY(100vh) rotate(0deg);
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-100px) rotate(360deg);
+            }
+        }
+        
+        .music-control {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            color: #ec4899;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .music-control:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+        
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .landing h1 {
+                font-size: 2.5rem;
+            }
+            
+            .landing p {
+                font-size: 1.2rem;
+            }
+            
+            .photo-placeholder {
+                width: 300px;
+                height: 400px;
+            }
+            
+            .about-section h2,
+            .timeline-title {
+                font-size: 2rem;
+            }
+            
+            .proposal-title {
+                font-size: 2.5rem;
+            }
+            
+            .timeline::before {
+                left: 2rem;
+            }
+            
+            .timeline-item,
+            .timeline-item:nth-child(even) {
+                flex-direction: row;
+                transform: translateX(0);
+            }
+            
+            .timeline-content {
+                margin-left: 4rem;
+                margin-right: 1rem;
+            }
+            
+            .timeline-dot {
+                position: absolute;
+                left: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Landing Section -->
+    <section class="section landing visible">
+        <h1>Hey Cutu...</h1>
+        <p>There's something I need to tell you</p>
+    </section>
+
+    <!-- Photo Section -->
+    <section class="section photo-section">
+        <img src="arya golu.JPG" alt="Beautiful Photo" style="width: 400px; height: 500px; object-fit: cover; border-radius: 20px; box-shadow: 0 15px 30px rgba(236, 72, 153, 0.2);">
+    </section>
+
+    <!-- About Her Section -->
+    <section class="section about-section">
+        <h2>What You Mean to Me?</h2>
+        <div class="about-text">
+            You came into my life like a quiet light
+soft steady and impossible to ignore
+I admire the way you speak feel care
+you make ordinary moments feel like something rare
+
+you belong with me not because i said so
+but because every part of me feels calmer truer when you’re near
+loving you doesn’t feel like falling
+it feels like finally arriving
+        </div>
+    </section>
+
+    <!-- Timeline Section -->
+    <section class="section timeline-section">
+        <h2 class="timeline-title">Our Beautiful Journey</h2>
+        <div class="timeline">
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <h3 class="moment-title">Moment 1</h3>
+                    <p class="moment-text">It all began with a simple question
+I want help in mathematical financing
+Who knew that behind those words I'd find someone who would soon mean so much to me
+That moment wasn’t just the start of a conversation it was the quiet beginning of something beautiful.</p>
+                </div>
+                <div class="timeline-dot"></div>
+            </div>
+            
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <h3 class="moment-title">Moment 2</h3>
+                    <p class="moment-text">Those late night calls that somehow turn into four hour marathons
+no awkward pauses just endless words laughter confessions and comfort
+nights never feel lonely when your voice is on the other side
+those calls are not just conversations they’re our favourite place to exist together
+</p>
+                </div>
+                <div class="timeline-dot"></div>
+            </div>
+            
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <h3 class="moment-title">Moment 3</h3>
+                    <p class="moment-text">even when we weren’t talking we were both secretly watching
+trying to win this silent race of who’s the better stalker
+you told chatgpt about me i smiled like an idiot when i found out
+funny how even in silence we were still choosing each other in our own little ways</p>
+                </div>
+                <div class="timeline-dot"></div>
+            </div>
+            
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <h3 class="moment-title">Moment 4</h3>
+                    <p class="moment-text">we argue like kids over who's more dumb
+you call me silly i call you slower
+but somewhere between the teasing and the laughter
+is this soft warmth that says i’m safe here with you.</p>
+                </div>
+                <div class="timeline-dot"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Proposal Section -->
+    <section class="section proposal-section">
+        <div class="proposal-content">
+            <h1 class="proposal-title">Will You Be Mine Forever?
+                <span class="heart">♥</span>
+            </h1>
+        </div>
+        <div class="floating-hearts"></div>
+    </section>
+
+    <!-- Final Message Section -->
+    <section class="section photo-section">
+        <div class="final-message-container">
+            <h2 style="font-size: 2.5rem; color: #be185d; margin-bottom: 2rem; font-weight: 300; text-align: center;">A Special Message For You</h2>
+                         <img src="arya moti.jpg" alt="Beautiful Photo" style="width: 400px; height: 500px; object-fit: cover; border-radius: 20px; box-shadow: 0 15px 30px rgba(236, 72, 153, 0.2);">
+
+            <div class="about-text" style="max-width: 600px; margin: 0 auto;">
+                For Arya
+
+I don’t need a map to find my way,
+Your voice is the north star I follow each day.
+In a world that moves too fast, too wild,
+You are my calm, my heart’s soft smile.
+
+Your laughter? That’s my favorite song,
+I could listen to it all day long.
+And your eyes—God, don’t get me started,
+One look and I’m completely disarmed.
+
+You make the ordinary feel brand new,
+Like rain feels fresh when I’m with you.
+Every moment, every glance,
+Feels like fate, not just chance.
+
+So here I stand, no grand display,
+Just a heart that’s yours in every way.
+No need for stars, no need for skies—
+I’ve got my universe in your eyes..
+            </div>
+        </div>
+    </section>
+
+    <!-- Music Control -->
+    <audio id="bg-music" src="song.mp3" loop autoplay></audio>
+    <button class="music-control" onclick="toggleMusic()" title="Play/Pause Music">
+        ♪
+    </button>
+
+    <script>
+        // Scroll Animation
+        const sections = document.querySelectorAll('.section');
+        const timelineItems = document.querySelectorAll('.timeline-item');
+        
+        const observerOptions = {
+            threshold: 0.3,
+            rootMargin: '0px 0px -100px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+        
+        sections.forEach(section => {
+            if (!section.classList.contains('visible')) {
+                observer.observe(section);
+            }
+        });
+        
+        timelineItems.forEach(item => {
+            observer.observe(item);
+        });
+        
+        // Floating Hearts Animation
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.className = 'heart';
+            heart.innerHTML = '♥';
+            heart.style.left = Math.random() * 100 + '%';
+            heart.style.animationDelay = Math.random() * 2 + 's';
+            heart.style.animationDuration = (Math.random() * 3 + 4) + 's';
+            
+            document.querySelector('.floating-hearts').appendChild(heart);
+            
+            setTimeout(() => {
+                heart.remove();
+            }, 7000);
+        }
+        
+        // Create hearts periodically
+        setInterval(createHeart, 1000);
+        
+        // Music Control
+        let musicPlaying = false;
+        const audio = document.getElementById('bg-music');
+        function toggleMusic() {
+            const button = document.querySelector('.music-control');
+            if (musicPlaying) {
+                button.innerHTML = '♪';
+                audio.pause();
+            } else {
+                button.innerHTML = '⏸';
+                audio.play();
+            }
+            musicPlaying = !musicPlaying;
+        }
+
+        // Optional: Start music automatically (unmuted) if user interacts
+        document.querySelector('.music-control').addEventListener('click', () => {
+            if (!musicPlaying) {
+                audio.play();
+            }
+        });
+        
+        // Smooth scrolling for better experience
+        document.documentElement.style.scrollBehavior = 'smooth';
+        
+        // Add some sparkle on mouse move
+        document.addEventListener('mousemove', (e) => {
+            if (Math.random() < 0.1) {
+                const sparkle = document.createElement('div');
+                sparkle.style.position = 'fixed';
+                sparkle.style.left = e.clientX + 'px';
+                sparkle.style.top = e.clientY + 'px';
+                sparkle.style.color = '#ec4899';
+                sparkle.style.fontSize = '12px';
+                sparkle.style.pointerEvents = 'none';
+                sparkle.style.zIndex = '1000';
+                sparkle.innerHTML = '✨';
+                sparkle.style.animation = 'fadeOut 1s ease-out forwards';
+                
+                document.body.appendChild(sparkle);
+                
+                setTimeout(() => sparkle.remove(), 1000);
+            }
+        });
+        
+        // Add fadeOut animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeOut {
+                0% { opacity: 1; transform: translateY(0); }
+                100% { opacity: 0; transform: translateY(-20px); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
